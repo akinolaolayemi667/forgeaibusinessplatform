@@ -41,7 +41,7 @@ export function TextField({
         aria-describedby={describedBy}
         onChange={(event) => onChange(event.target.value)}
         className={cn(
-          'h-11 rounded-md border bg-surface-raised px-3 text-copy outline-none',
+          'h-11 rounded-sm border bg-surface px-3 text-copy outline-none focus-visible:border-ember',
           error ? 'border-danger' : 'border-stroke',
         )}
       />

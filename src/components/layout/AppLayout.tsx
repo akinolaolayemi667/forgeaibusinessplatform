@@ -48,7 +48,7 @@ export function AppLayout() {
   }, [drawerOpen, drawer.close])
 
   return (
-    <div data-theme="iron" className="min-h-dvh bg-surface text-copy">
+    <div data-theme="iron" className="forge-canvas min-h-dvh text-copy">
       <SkipLink />
       {drawerOpen ? (
         <div className="fixed inset-0 z-40 lg:hidden">
@@ -75,7 +75,7 @@ export function AppLayout() {
         </div>
       ) : null}
       <div className="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]" inert={drawerOpen ? true : undefined}>
-        <aside className="sticky top-0 hidden h-dvh flex-col border-r border-stroke p-4 lg:flex">
+        <aside className="sticky top-0 hidden h-dvh flex-col border-r border-stroke bg-surface p-4 lg:flex">
           <Logo to="/app" />
           <div className="mt-6 flex-1 overflow-y-auto">
             <AppSidebar />
@@ -83,7 +83,7 @@ export function AppLayout() {
           <p className="pt-4 text-xs text-muted">Sample records</p>
         </aside>
         <div className="min-w-0">
-          <header className="flex h-14 items-center gap-2 border-b border-stroke px-3 sm:px-4">
+          <header className="flex h-14 items-center gap-2 border-b border-stroke bg-surface px-3 sm:px-4">
             <Button
               ref={menuButtonRef}
               variant="ghost"

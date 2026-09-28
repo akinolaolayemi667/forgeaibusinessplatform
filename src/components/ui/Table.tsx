@@ -23,7 +23,7 @@ export function Table<T>({ caption, columns, rows, getRowId, empty }: TableProps
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-stroke">
+    <div className="overflow-x-auto rounded-sm border border-stroke bg-surface-raised">
       <table className="min-w-full border-collapse text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead>
@@ -33,7 +33,7 @@ export function Table<T>({ caption, columns, rows, getRowId, empty }: TableProps
                 key={column.id}
                 scope="col"
                 className={cn(
-                  'border-b border-stroke px-3 py-2 font-medium whitespace-nowrap text-muted',
+                  'border-b border-stroke px-3 py-2 font-mono text-[11px] font-medium tracking-[0.08em] whitespace-nowrap text-muted uppercase',
                   column.align === 'right' ? 'text-right' : 'text-left',
                 )}
               >
@@ -50,7 +50,7 @@ export function Table<T>({ caption, columns, rows, getRowId, empty }: TableProps
                   key={column.id}
                   className={cn(
                     'px-3 py-3 align-middle text-copy',
-                    column.align === 'right' && 'text-right tabular-nums',
+                    column.align === 'right' && 'type-data text-right',
                   )}
                 >
                   {column.cell(row)}

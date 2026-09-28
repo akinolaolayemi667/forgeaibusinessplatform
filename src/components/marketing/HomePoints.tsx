@@ -7,7 +7,7 @@ export function HomePoints({ points }: { points: HomePoint[] }) {
       {points.map((point) => (
         <li key={point.id}>
           <Card className="h-full">
-            <p className="text-xs font-medium tracking-[0.16em] text-ember uppercase">{point.kicker}</p>
+            <p className="type-kicker text-ember">{point.kicker}</p>
             <CardTitle as="h3">{point.title}</CardTitle>
             <CardDescription>{point.summary}</CardDescription>
           </Card>

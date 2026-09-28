@@ -21,12 +21,12 @@ export function PricingPage() {
       <QueryState loading={query.loading} error={query.error}>
         <div className="grid gap-4 lg:grid-cols-3">
           {(query.data ?? []).map((plan) => (
-            <Card key={plan.id} className={cn('h-full', plan.featured && 'ring-1 ring-ember')}>
+            <Card key={plan.id} className={cn('h-full', plan.featured && 'border-ember')}>
               <div className="flex items-center justify-between gap-2">
                 <CardTitle>{plan.name}</CardTitle>
                 {plan.featured ? <Badge variant="accent">Team default</Badge> : null}
               </div>
-              <p className="font-display text-4xl text-copy">{plan.price}</p>
+              <p className="type-data text-4xl text-copy">{plan.price}</p>
               <CardDescription>{plan.period}</CardDescription>
               <p className="text-sm text-copy">{plan.description}</p>
               <ul className="flex flex-col gap-2 text-sm text-copy">

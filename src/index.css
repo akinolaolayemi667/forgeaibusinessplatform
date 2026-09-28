@@ -1,69 +1,125 @@
 @import "tailwindcss";
 
+/*
+  FORGE visual identity: neo-industrial.
+  4px spacing grid. Sharp radii. Solid surfaces. Orange is the only accent.
+*/
+
 :root {
-  --surface: #f3efe6;
-  --surface-raised: #fbf8f2;
-  --copy: #141814;
-  --muted: #4e584d;
-  --stroke: #ddd4c6;
-  --wash: rgb(20 24 20 / 0.06);
-  --badge-neutral-bg: #ece7dc;
-  --badge-neutral-fg: #3d463c;
-  --badge-ok-bg: #e5f4ec;
-  --badge-ok-fg: #0f6b43;
-  --badge-warn-bg: #f8efd8;
-  --badge-warn-fg: #8a5a10;
-  --badge-danger-bg: #fde8e6;
-  --badge-danger-fg: #9f2218;
-  --badge-info-bg: #e5f0f4;
-  --badge-info-fg: #1f5568;
-  --badge-accent-bg: #f8e6df;
-  --badge-accent-fg: #9a3412;
+  --black: #0b0d0f;
+  --ink-2: #111417;
+  --panel: #171b1f;
+  --paper: #f5f3ee;
+  --paper-2: #ece9e1;
+  --orange: #ff6a00;
+  --orange-hot: #ff7a1a;
+  --stone: #c8c4bb;
+  --ash: #8d918e;
+  --steel: #24292d;
+
+  --surface: var(--paper-2);
+  --surface-shade: var(--paper);
+  --surface-raised: var(--paper);
+  --surface-overlay: var(--paper);
+  --copy: var(--black);
+  --muted: #5c615e;
+  --stroke: #d5d1c8;
+  --grid-line: rgb(36 41 45 / 0.07);
+  --wash: rgb(11 13 15 / 0.05);
+  --shadow: 0 16px 40px rgb(11 13 15 / 0.12);
+
+  --button-secondary-bg: var(--ink-2);
+  --button-secondary-fg: var(--paper);
+  --button-secondary-hover: var(--steel);
+
+  --badge-neutral-bg: #e4e0d8;
+  --badge-neutral-fg: #24292d;
+  --badge-ok-bg: #e3eee8;
+  --badge-ok-fg: #1b5c40;
+  --badge-warn-bg: #f3ead4;
+  --badge-warn-fg: #7a5310;
+  --badge-danger-bg: #f6e4e0;
+  --badge-danger-fg: #8c2d22;
+  --badge-info-bg: #e4eaee;
+  --badge-info-fg: #243c4a;
+  --badge-accent-bg: #ffe4d1;
+  --badge-accent-fg: #8a3200;
+
   color-scheme: light;
 }
 
 [data-theme='iron'] {
-  --surface: #101410;
-  --surface-raised: #1b221d;
-  --copy: #f3efe6;
-  --muted: #c3ccc0;
-  --stroke: #314038;
-  --wash: rgb(243 239 230 / 0.08);
-  --badge-neutral-bg: #2a332c;
-  --badge-neutral-fg: #e4e7df;
-  --badge-ok-bg: #163528;
-  --badge-ok-fg: #b7e4c7;
-  --badge-warn-bg: #3a2e14;
-  --badge-warn-fg: #f3d48a;
-  --badge-danger-bg: #3f1d1a;
-  --badge-danger-fg: #ffc7c2;
-  --badge-info-bg: #163038;
-  --badge-info-fg: #c5e4ef;
-  --badge-accent-bg: #3a241c;
-  --badge-accent-fg: #ffd0bf;
+  --surface: var(--black);
+  --surface-shade: var(--ink-2);
+  --surface-raised: var(--ink-2);
+  --surface-overlay: var(--panel);
+  --copy: var(--paper);
+  --muted: var(--ash);
+  --stroke: var(--steel);
+  --grid-line: rgb(200 196 187 / 0.05);
+  --wash: rgb(245 243 238 / 0.06);
+  --shadow: 0 16px 40px rgb(0 0 0 / 0.4);
+
+  --button-secondary-bg: var(--steel);
+  --button-secondary-fg: var(--paper);
+  --button-secondary-hover: #32383d;
+
+  --badge-neutral-bg: #24292d;
+  --badge-neutral-fg: #e4e1da;
+  --badge-ok-bg: #163028;
+  --badge-ok-fg: #b7d7c6;
+  --badge-warn-bg: #3a3016;
+  --badge-warn-fg: #ead7a6;
+  --badge-danger-bg: #3a1e1a;
+  --badge-danger-fg: #f0c2ba;
+  --badge-info-bg: #1a2830;
+  --badge-info-fg: #c9d7e0;
+  --badge-accent-bg: #3a220f;
+  --badge-accent-fg: #ffb27a;
+
   color-scheme: dark;
 }
 
 @theme {
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
-  --color-ink: #141814;
-  --color-paper: #f3efe6;
-  --color-ember: #c2410c;
-  --color-ember-deep: #9a3412;
-  --color-oxide: #1c3a32;
-  --color-oxide-deep: #142e28;
-  --color-danger: #9f2218;
-  --color-danger-deep: #7f1b14;
+  --spacing: 4px;
+  --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+
+  --shadow-sm: 0 1px 0 rgb(11 13 15 / 0.08);
+  --shadow-md: 0 16px 40px rgb(11 13 15 / 0.16);
+
+  --color-black: #0b0d0f;
+  --color-ink: #0b0d0f;
+  --color-panel: #171b1f;
+  --color-paper: #f5f3ee;
+  --color-paper-2: #ece9e1;
+  --color-ember: #ff6a00;
+  --color-ember-hot: #ff7a1a;
+  --color-stone: #c8c4bb;
+  --color-ash: #8d918e;
+  --color-steel: #24292d;
+  --color-on-accent: #0b0d0f;
+  --color-danger: #b42318;
+  --color-danger-deep: #8c1b12;
 }
 
 @theme inline {
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
   --color-copy: var(--copy);
   --color-muted: var(--muted);
   --color-stroke: var(--stroke);
   --color-wash: var(--wash);
+  --color-secondary: var(--button-secondary-bg);
+  --color-secondary-hover: var(--button-secondary-hover);
+  --color-on-secondary: var(--button-secondary-fg);
   --color-badge-neutral-bg: var(--badge-neutral-bg);
   --color-badge-neutral-fg: var(--badge-neutral-fg);
   --color-badge-ok-bg: var(--badge-ok-bg);
@@ -90,16 +146,27 @@
     background: var(--surface);
     color: var(--copy);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
 
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+  }
+
   ::selection {
-    background: #f0c2b0;
-    color: #141814;
+    background: var(--orange);
+    color: var(--black);
   }
 
   :focus-visible {
-    outline: 2px solid #c2410c;
+    outline: 2px solid var(--orange);
     outline-offset: 2px;
   }
 
@@ -113,4 +180,28 @@
       scroll-behavior: auto !important;
     }
   }
+}
+
+@utility forge-canvas {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(180deg, var(--surface-shade) 0%, transparent 22rem),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: auto, 72px 72px, 72px 72px;
+}
+
+@utility type-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+@utility type-data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
 }

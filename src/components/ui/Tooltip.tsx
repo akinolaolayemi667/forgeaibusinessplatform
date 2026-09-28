@@ -29,7 +29,7 @@ export function Tooltip({ content, children }: TooltipProps) {
         <span
           role="tooltip"
           id={id}
-          className="pointer-events-none absolute top-full left-1/2 z-30 mt-2 w-max max-w-xs -translate-x-1/2 rounded-md border border-white/15 bg-ink px-2 py-1 text-xs text-paper"
+          className="pointer-events-none absolute top-full left-1/2 z-30 mt-2 w-max max-w-xs -translate-x-1/2 rounded-sm border border-steel bg-black px-2 py-1 text-xs text-paper"
         >
           {content}
         </span>

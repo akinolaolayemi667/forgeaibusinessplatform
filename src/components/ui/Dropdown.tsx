@@ -112,7 +112,7 @@ export function Dropdown({ label, menuLabel, items, align = 'start', hint, trigg
           role="menu"
           aria-label={menuLabel ?? label}
           className={cn(
-            'absolute z-50 mt-2 min-w-56 rounded-lg border border-stroke bg-surface-raised p-1',
+            'absolute z-50 mt-2 min-w-56 rounded-sm border border-stroke bg-surface-overlay p-1 shadow-md',
             align === 'end' ? 'right-0' : 'left-0',
           )}
           onKeyDown={onMenuKeyDown}

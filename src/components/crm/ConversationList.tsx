@@ -28,8 +28,8 @@ export function ConversationList({ rows }: { rows: Conversation[] }) {
                 aria-pressed={isSelected}
                 onClick={() => setSelectedId(row.id)}
                 className={cn(
-                  'flex w-full cursor-pointer flex-col gap-1 rounded-lg border px-4 py-3 text-left',
-                  isSelected ? 'border-ember bg-wash' : 'border-stroke hover:bg-wash',
+                  'flex w-full cursor-pointer flex-col gap-1 rounded-sm border px-4 py-3 text-left',
+                  isSelected ? 'border-ember bg-wash' : 'border-stroke hover:border-stone hover:bg-wash',
                 )}
               >
                 <span className="flex items-center justify-between gap-2">

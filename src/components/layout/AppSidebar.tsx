@@ -16,8 +16,10 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void }) {
                 onClick={onNavigate}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm no-underline',
-                    isActive ? 'bg-wash text-copy' : 'text-muted hover:bg-wash hover:text-copy',
+                    'flex items-center gap-2 border-l-2 px-3 py-2 text-sm no-underline',
+                    isActive
+                      ? 'border-ember bg-wash font-medium text-copy'
+                      : 'border-transparent text-muted hover:bg-wash hover:text-copy',
                   )
                 }
               >

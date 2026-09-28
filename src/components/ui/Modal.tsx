@@ -62,7 +62,7 @@ export function Modal({ open, title, description, onClose, children }: ModalProp
         aria-describedby={description ? descriptionId : undefined}
         tabIndex={-1}
         data-theme="paper"
-        className="relative z-10 max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-lg border border-stroke bg-surface-raised p-5 text-copy outline-none"
+        className="relative z-10 max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-sm border border-stroke bg-surface-raised p-5 text-copy shadow-md outline-none"
         initial={reduce ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reduce ? 0 : 0.2 }}

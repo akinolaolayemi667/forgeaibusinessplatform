@@ -23,7 +23,7 @@ export function Avatar({ name, src, size = 'md', decorative = true }: AvatarProp
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md bg-oxide font-medium text-paper',
+        'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-sm border border-stroke bg-steel font-mono text-[11px] font-medium text-paper',
         sizeClass[size],
       )}
       role={decorative ? undefined : 'img'}

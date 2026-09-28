@@ -22,8 +22,8 @@ export function HomePage() {
     >
       <section aria-labelledby="home-title" className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(16rem,0.7fr)] lg:items-end">
         <div className="flex flex-col gap-4">
-          <p className="text-xs font-medium tracking-[0.16em] text-muted uppercase">AI business automation</p>
-          <h1 id="home-title" className="max-w-xl font-display text-5xl text-copy sm:text-6xl">
+          <p className="type-kicker text-muted">AI business automation</p>
+          <h1 id="home-title" className="max-w-xl font-display text-4xl text-copy sm:text-5xl lg:text-6xl">
             The workbench for revenue teams.
           </h1>
           <p className="max-w-xl text-base text-muted">
@@ -40,14 +40,14 @@ export function HomePage() {
           </div>
         </div>
         <aside className="border-t border-stroke pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6">
-          <p className="text-xs font-medium tracking-[0.16em] text-muted uppercase">Sample workspace</p>
-          <p className="mt-2 font-display text-3xl text-copy">{workspace.name}</p>
+          <p className="type-kicker text-muted">Sample workspace</p>
+          <p className="mt-2 font-display text-2xl text-copy sm:text-3xl">{workspace.name}</p>
           <QueryState loading={metrics.loading} error={metrics.error}>
             <dl className="mt-4 grid grid-cols-2 gap-4">
               {(metrics.data ?? []).map((metric) => (
                 <div key={metric.id}>
                   <dt className="text-sm text-muted">{metric.label}</dt>
-                  <dd className="font-display text-2xl text-copy tabular-nums">{metric.value}</dd>
+                  <dd className="type-data text-2xl text-copy">{metric.value}</dd>
                 </div>
               ))}
             </dl>

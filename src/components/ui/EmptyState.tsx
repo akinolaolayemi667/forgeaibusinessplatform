@@ -9,7 +9,7 @@ type EmptyStateProps = {
 
 export function EmptyState({ title, description, icon, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-stroke px-5 py-8">
+    <div className="flex flex-col items-start gap-3 rounded-sm border border-dashed border-stroke bg-surface-raised px-5 py-8">
       {icon ? (
         <div className="text-ember" aria-hidden>
           {icon}

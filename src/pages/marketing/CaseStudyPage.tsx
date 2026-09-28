@@ -20,9 +20,9 @@ export function CaseStudyPage() {
             <p className="text-base text-copy">{study.summary}</p>
             <dl className="grid gap-4 sm:grid-cols-3">
               {study.outcomes.map((outcome) => (
-                <div key={outcome.label} className="rounded-lg border border-stroke bg-surface-raised p-4">
+                <div key={outcome.label} className="rounded-sm border border-stroke bg-surface-raised p-4">
                   <dt className="text-sm text-muted">{outcome.label}</dt>
-                  <dd className="font-display text-3xl text-copy">{outcome.value}</dd>
+                  <dd className="type-data text-3xl text-copy">{outcome.value}</dd>
                 </div>
               ))}
             </dl>

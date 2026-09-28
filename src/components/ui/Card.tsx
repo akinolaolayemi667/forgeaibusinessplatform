@@ -11,7 +11,7 @@ type CardProps = {
 export function Card({ children, className, padded = true, as = 'div' }: CardProps) {
   const Tag = as
   return (
-    <Tag className={cn('flex flex-col gap-3 rounded-lg border border-stroke bg-surface-raised', padded && 'p-5', className)}>
+    <Tag className={cn('flex flex-col gap-3 rounded-sm border border-stroke bg-surface-raised', padded && 'p-5', className)}>
       {children}
     </Tag>
   )
@@ -31,7 +31,7 @@ export function CardTitle({
   className?: string
 }) {
   const Tag = as
-  return <Tag className={cn('font-display text-xl text-copy', className)}>{children}</Tag>
+  return <Tag className={cn('font-display text-lg text-copy sm:text-xl', className)}>{children}</Tag>
 }
 
 export function CardDescription({ children, className }: { children: ReactNode; className?: string }) {

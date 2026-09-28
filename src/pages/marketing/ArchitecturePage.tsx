@@ -16,8 +16,8 @@ export function ArchitecturePage() {
       <QueryState loading={query.loading} error={query.error}>
         <ol className="flex flex-col gap-3">
           {(query.data ?? []).map((layer, index) => (
-            <li key={layer.id} className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 rounded-lg border border-stroke bg-surface-raised p-4">
-              <span className="font-display text-2xl text-ember">{index + 1}</span>
+            <li key={layer.id} className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 rounded-sm border border-stroke bg-surface-raised p-4">
+              <span className="type-data text-2xl text-ember">{index + 1}</span>
               <div className="flex flex-col gap-1">
                 <h2 className="font-display text-xl text-copy">{layer.name}</h2>
                 <p className="text-sm text-muted">{layer.detail}</p>

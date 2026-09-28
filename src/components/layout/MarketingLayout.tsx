@@ -12,7 +12,7 @@ import { cn } from '@/lib/cn'
 function navClass(isActive: boolean) {
   return cn(
     'text-sm no-underline',
-    isActive ? 'border-b border-ember text-copy' : 'text-muted hover:text-copy',
+    isActive ? 'border-b-2 border-ember pb-0.5 text-copy' : 'border-b-2 border-transparent pb-0.5 text-muted hover:text-copy',
   )
 }
 
@@ -34,9 +34,9 @@ export function MarketingLayout() {
   }, [menu.isOpen, menu.close])
 
   return (
-    <div className="flex min-h-dvh flex-col bg-surface text-copy">
+    <div className="forge-canvas flex min-h-dvh flex-col text-copy">
       <SkipLink />
-      <header className="sticky top-0 z-20 border-b border-stroke bg-surface/95 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-stroke bg-surface-raised">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Logo />
           <nav aria-label="Primary" className="hidden md:block">

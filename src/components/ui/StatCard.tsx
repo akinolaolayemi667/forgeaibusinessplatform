@@ -24,7 +24,7 @@ export function StatCard({ label, value, delta, deltaTone = 'neutral', hint }: S
           </Tooltip>
         ) : null}
       </div>
-      <p className="font-display text-3xl text-copy tabular-nums">{value}</p>
+      <p className="type-data text-3xl text-copy">{value}</p>
       {delta ? (
         <Badge className="self-start" variant={deltaTone}>
           {delta}

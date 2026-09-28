@@ -5,10 +5,10 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'dan
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 const variantClass: Record<ButtonVariant, string> = {
-  primary: 'bg-ember text-paper hover:bg-ember-deep',
-  secondary: 'bg-oxide text-paper hover:bg-oxide-deep',
+  primary: 'bg-ember text-on-accent hover:bg-ember-hot',
+  secondary: 'bg-secondary text-on-secondary hover:bg-secondary-hover',
   ghost: 'bg-transparent text-copy hover:bg-wash',
-  outline: 'border border-stroke bg-transparent text-copy hover:bg-wash',
+  outline: 'border border-stroke bg-transparent text-copy hover:border-stone hover:bg-wash',
   danger: 'bg-danger text-paper hover:bg-danger-deep',
 }
 
@@ -20,7 +20,7 @@ const sizeClass: Record<ButtonSize, string> = {
 
 export function buttonStyles(variant: ButtonVariant = 'primary', size: ButtonSize = 'md', className?: string) {
   return cn(
-    'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-medium no-underline transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+    'inline-flex cursor-pointer items-center justify-center gap-2 rounded-sm font-semibold tracking-[-0.01em] no-underline transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50',
     variantClass[variant],
     sizeClass[size],
     className,
