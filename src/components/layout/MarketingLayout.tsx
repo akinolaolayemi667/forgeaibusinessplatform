@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { marketingNav } from '@/data/navigation'
 import { useDisclosure } from '@/hooks/useDisclosure'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { buttonStyles } from '@/components/ui/Button'
 import { Logo } from '@/components/layout/Logo'
+import { MarketingFooter } from '@/components/marketing/MarketingFooter'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { cn } from '@/lib/cn'
 
@@ -19,6 +20,7 @@ function navClass(isActive: boolean) {
 export function MarketingLayout() {
   const menu = useDisclosure()
   const isWide = useMediaQuery('(min-width: 768px)')
+  const home = useLocation().pathname === '/'
 
   useEffect(() => {
     if (isWide) menu.close()
@@ -97,15 +99,17 @@ export function MarketingLayout() {
           </ul>
         </nav>
       </header>
-      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 outline-none sm:px-6">
+      <main
+        id="main"
+        tabIndex={-1}
+        className={cn(
+          'w-full flex-1 outline-none',
+          home ? '' : 'mx-auto max-w-6xl px-4 py-10 sm:px-6',
+        )}
+      >
         <Outlet />
       </main>
-      <footer className="border-t border-stroke">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>FORGE · AI business automation</p>
-          <p>Preview records stay in this browser.</p>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   )
 }
