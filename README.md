@@ -1,75 +1,81 @@
-# React + TypeScript + Vite
+# FORGE
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+FORGE is an AI business automation platform for revenue teams. It keeps leads, conversations, pipeline, and the next action on one record.
 
-Currently, two official plugins are available:
+This repository is the application foundation: a working React app with routing, a reusable interface kit, and local mock data shaped so a later Supabase or HTTP source can replace it.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React 19, TypeScript, Vite
+- Tailwind CSS
+- React Router
+- Framer Motion
+- Lucide icons
+- Recharts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Scripts
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
+npm run build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Routes
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Path | Surface |
+| --- | --- |
+| `/` | Product introduction |
+| `/features` | Workspace surfaces |
+| `/pricing` | Seat plans |
+| `/login` | Tab session |
+| `/signup` | Operator profile |
+| `/demo` | Preview entry |
+| `/architecture` | How the app is layered |
+| `/case-study` | Sample workspace story |
+| `/app` | Workspace overview |
+| `/app/leads` | Leads |
+| `/app/contacts` | Contacts |
+| `/app/pipeline` | Pipeline |
+| `/app/conversations` | Conversations |
+| `/app/automations` | Automations |
+| `/app/ai` | Assistant briefing |
+| `/app/analytics` | Qualified vs won |
+| `/app/integrations` | Connections |
+| `/app/team` | Team |
+| `/app/settings` | Operator settings |
+| `/app/billing` | Sample plan |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Source layout
 
+```text
+src/
+  components/
+    ui/          reusable controls
+    layout/      marketing and workspace chrome
+    marketing/   public-page pieces
+    dashboard/   overview metrics
+    crm/         leads, contacts, pipeline, conversations
+    automation/  automation records
+    ai/          briefing panel
+    analytics/   charts
+  data/          ForgeDataSource and the mock implementation
+  hooks/         session, workspace, async reads, disclosure
+  lib/           class names, session storage, router
+  pages/         route screens
+  types/         shared models
+  utils/         formatting and focus helpers
 ```
+
+## Data
+
+Pages do not import raw arrays. They call `forgeData`, a `ForgeDataSource`. The current implementation in `src/data/mock.ts` resolves local sample records for two workspaces, Harbor & Co. and Fieldnote Studio.
+
+To connect a backend, implement the same interface in `src/data/source.ts` and export it from `src/data/index.ts`. Pages and hooks can stay as they are.
+
+Sign-in stores an operator profile in `sessionStorage` for the current tab. It does not call a server. Leads added from the workspace last until refresh.
+
+## Accessibility
+
+The shell includes a skip link, visible focus, keyboard menus, a focus-trapped dialog, and a mobile navigation drawer. Motion follows `prefers-reduced-motion`.
