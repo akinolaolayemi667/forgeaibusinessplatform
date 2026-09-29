@@ -6,6 +6,12 @@ import { AiPage } from '@/pages/app/AiPage'
 import { AnalyticsPage } from '@/pages/app/AnalyticsPage'
 import { AutomationsPage } from '@/pages/app/AutomationsPage'
 import { BillingPage } from '@/pages/app/BillingPage'
+import { CrmCompaniesPage } from '@/pages/app/crm/CrmCompaniesPage'
+import { CrmCompanyPage } from '@/pages/app/crm/CrmCompanyPage'
+import { CrmContactPage } from '@/pages/app/crm/CrmContactPage'
+import { CrmContactsPage } from '@/pages/app/crm/CrmContactsPage'
+import { CrmLayout } from '@/pages/app/crm/CrmLayout'
+import { CrmOverviewPage } from '@/pages/app/crm/CrmOverviewPage'
 import { ContactsPage } from '@/pages/app/ContactsPage'
 import { ConversationsPage } from '@/pages/app/ConversationsPage'
 import { IntegrationsPage } from '@/pages/app/IntegrationsPage'
@@ -46,6 +52,18 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { index: true, element: <OverviewPage />, handle: { title: 'Overview' } },
+          {
+            path: 'crm',
+            element: <CrmLayout />,
+            handle: { title: 'CRM' },
+            children: [
+              { index: true, element: <CrmOverviewPage /> },
+              { path: 'contacts', element: <CrmContactsPage />, handle: { title: 'Contacts' } },
+              { path: 'contacts/:contactId', element: <CrmContactPage />, handle: { title: 'Contact details' } },
+              { path: 'companies', element: <CrmCompaniesPage />, handle: { title: 'Companies' } },
+              { path: 'companies/:companyId', element: <CrmCompanyPage />, handle: { title: 'Company' } },
+            ],
+          },
           { path: 'leads', element: <LeadsPage />, handle: { title: 'Leads' } },
           { path: 'contacts', element: <ContactsPage />, handle: { title: 'Contacts' } },
           { path: 'pipeline', element: <PipelinePage />, handle: { title: 'Pipeline' } },

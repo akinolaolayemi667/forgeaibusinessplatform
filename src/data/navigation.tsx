@@ -1,6 +1,7 @@
 import {
   BarChart3,
   BookUser,
+  Contact,
   CreditCard,
   Kanban,
   LayoutDashboard,
@@ -31,6 +32,7 @@ export const marketingNav = [
 
 export const appPrimaryNav: AppNavItem[] = [
   { to: '/app', label: 'Overview', icon: LayoutDashboard, end: true },
+  { to: '/app/crm', label: 'CRM', icon: Contact },
   { to: '/app/leads', label: 'Leads', icon: UserPlus },
   { to: '/app/contacts', label: 'Contacts', icon: BookUser },
   { to: '/app/pipeline', label: 'Pipeline', icon: Kanban },
