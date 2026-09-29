@@ -12,7 +12,7 @@ export function AiPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="Assistant"
+        eyebrow="AI Assistant"
         title="Briefing"
         description="A short read of one account before anyone writes back."
       />

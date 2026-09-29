@@ -8,6 +8,7 @@ import type {
   ChartPoint,
   Contact,
   Conversation,
+  DashboardSnapshot,
   Deal,
   FeatureArea,
   HomePoint,
@@ -18,6 +19,7 @@ import type {
   TeamMember,
   Workspace,
 } from '@/types'
+import { formatCurrency } from '@/utils/format'
 
 export const workspaces: Workspace[] = [
   { id: 'ws_harbor', name: 'Harbor & Co.' },
@@ -239,6 +241,156 @@ function inWorkspace<T extends { workspaceId: string }>(rows: T[], workspaceId: 
   return rows.filter((row) => row.workspaceId === workspaceId)
 }
 
+function percent(part: number, whole: number) {
+  if (whole <= 0) return '0%'
+  return `${Math.round((part / whole) * 100)}%`
+}
+
+const closedRevenue: Record<string, { value: number; delta: string }> = {
+  [harbor]: { value: 48000, delta: '+$6k this month' },
+  [fieldnote]: { value: 12000, delta: '+$2k this month' },
+}
+
+const funnelByWorkspace: Record<string, DashboardSnapshot['funnel']> = {
+  [harbor]: [
+    { stage: 'New', count: 6 },
+    { stage: 'Working', count: 5 },
+    { stage: 'Qualified', count: 7 },
+    { stage: 'Won', count: 3 },
+  ],
+  [fieldnote]: [
+    { stage: 'New', count: 3 },
+    { stage: 'Working', count: 1 },
+    { stage: 'Qualified', count: 2 },
+    { stage: 'Won', count: 1 },
+  ],
+}
+
+function buildDashboard(workspaceId: string): DashboardSnapshot {
+  const workspaceLeads = inWorkspace(leads, workspaceId)
+  const workspaceDeals = inWorkspace(deals, workspaceId)
+  const workspaceAutomations = inWorkspace(automations, workspaceId)
+  const workspaceBriefings = inWorkspace(briefings, workspaceId)
+  const workspaceConversations = inWorkspace(conversations, workspaceId)
+  const workspaceMetrics = inWorkspace(metrics, workspaceId)
+  const openLeads = Number(workspaceMetrics.find((metric) => metric.id.endsWith('leads'))?.value ?? workspaceLeads.length)
+  const qualified = Number(workspaceMetrics.find((metric) => metric.id.endsWith('qualified'))?.value ?? 0)
+  const newLeadMetric = workspaceMetrics.find((metric) => metric.id.endsWith('leads'))
+  const newLeadCount = newLeadMetric?.delta.match(/\d+/)?.[0] ?? String(workspaceLeads.filter((lead) => lead.status === 'New').length)
+  const pipeline = workspaceDeals.reduce((sum, deal) => sum + deal.value, 0)
+  const liveRuns = workspaceAutomations.filter((item) => item.status === 'Live').reduce((sum, item) => sum + item.runs, 0)
+  const totalRuns = workspaceAutomations.reduce((sum, item) => sum + item.runs, 0)
+  const revenue = closedRevenue[workspaceId] ?? { value: 0, delta: 'No closed revenue' }
+  const pipelineMetric = workspaceMetrics.find((metric) => metric.label === 'Pipeline')
+
+  const activity: DashboardSnapshot['activity'] = [
+    ...workspaceConversations.map((conversation) => ({
+      id: conversation.id,
+      title: conversation.unread ? `Reply waiting · ${conversation.contact}` : conversation.contact,
+      detail: conversation.preview,
+      at: conversation.updatedAt,
+      href: '/app/conversations',
+    })),
+    ...workspaceBriefings.map((briefing) => ({
+      id: briefing.id,
+      title: `Briefing ready · ${briefing.account}`,
+      detail: briefing.nextStep,
+      at: '2026-09-26T16:20:00Z',
+      href: '/app/ai',
+    })),
+    ...workspaceAutomations
+      .filter((item) => item.status === 'Live')
+      .map((item) => ({
+        id: item.id,
+        title: item.name,
+        detail: `${item.runs} runs · ${item.trigger}`,
+        at: '2026-09-26T14:05:00Z',
+        href: '/app/automations',
+      })),
+  ]
+    .sort((a, b) => b.at.localeCompare(a.at))
+    .slice(0, 5)
+
+  const recommendations: DashboardSnapshot['recommendations'] = [
+    ...workspaceBriefings.map((briefing) => ({
+      id: briefing.id,
+      title: briefing.account,
+      detail: briefing.nextStep,
+      href: '/app/ai',
+    })),
+    ...workspaceConversations
+      .filter((conversation) => conversation.unread)
+      .map((conversation) => ({
+        id: conversation.id,
+        title: `Answer ${conversation.contact}`,
+        detail: conversation.preview,
+        href: '/app/conversations',
+      })),
+    ...workspaceAutomations
+      .filter((item) => item.status === 'Paused')
+      .map((item) => ({
+        id: item.id,
+        title: `${item.name} is paused`,
+        detail: item.trigger,
+        href: '/app/automations',
+      })),
+  ].slice(0, 3)
+
+  return {
+    kpis: [
+      {
+        id: 'revenue',
+        label: 'Revenue',
+        value: formatCurrency(revenue.value),
+        delta: revenue.delta,
+        direction: 'up',
+        hint: 'Closed sample revenue for this month. Checkout is not connected.',
+      },
+      {
+        id: 'pipeline',
+        label: 'Pipeline',
+        value: formatCurrency(pipeline),
+        delta: pipelineMetric?.delta ?? 'Open deals',
+        direction: pipelineMetric?.direction ?? 'flat',
+        hint: 'Sum of open deal value in this workspace.',
+      },
+      {
+        id: 'new-leads',
+        label: 'New Leads',
+        value: newLeadCount,
+        delta: newLeadMetric?.delta ?? 'This week',
+        direction: newLeadMetric?.direction ?? 'flat',
+        hint: 'Leads added this week in the sample set.',
+      },
+      {
+        id: 'conversion',
+        label: 'Conversion Rate',
+        value: percent(qualified, openLeads),
+        delta: `${qualified} qualified`,
+        direction: qualified > 0 ? 'up' : 'flat',
+        hint: 'Qualified leads divided by open leads.',
+      },
+      {
+        id: 'automation',
+        label: 'Automation Rate',
+        value: percent(liveRuns, totalRuns),
+        delta: `${liveRuns} live runs`,
+        direction: liveRuns > 0 ? 'up' : 'flat',
+        hint: 'Share of recorded runs that came from a live rule.',
+      },
+    ],
+    activity,
+    funnel: funnelByWorkspace[workspaceId] ?? [],
+    performance: workspaceAutomations.map((item) => ({
+      id: item.id,
+      name: item.name,
+      status: item.status,
+      runs: item.runs,
+    })),
+    recommendations,
+  }
+}
+
 export function createMockDataSource(): ForgeDataSource {
   return {
     listWorkspaces: () => Promise.resolve(workspaces),
@@ -263,5 +415,6 @@ export function createMockDataSource(): ForgeDataSource {
         ? Promise.resolve(snapshot)
         : Promise.reject(new Error('Billing is not available for this workspace.'))
     },
+    getDashboard: (workspaceId) => Promise.resolve(buildDashboard(workspaceId)),
   }
 }

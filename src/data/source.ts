@@ -2,6 +2,7 @@ import type {
   ArchitectureLayer,
   Automation,
   BillingSnapshot,
+  DashboardSnapshot,
   Briefing,
   CaseStudy,
   ChartPoint,
@@ -37,4 +38,5 @@ export interface ForgeDataSource {
   listIntegrations(workspaceId: string): Promise<Integration[]>
   listTeam(workspaceId: string): Promise<TeamMember[]>
   getBilling(workspaceId: string): Promise<BillingSnapshot>
+  getDashboard(workspaceId: string): Promise<DashboardSnapshot>
 }

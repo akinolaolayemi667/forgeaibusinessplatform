@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
           { path: 'pipeline', element: <PipelinePage />, handle: { title: 'Pipeline' } },
           { path: 'conversations', element: <ConversationsPage />, handle: { title: 'Conversations' } },
           { path: 'automations', element: <AutomationsPage />, handle: { title: 'Automations' } },
-          { path: 'ai', element: <AiPage />, handle: { title: 'Assistant' } },
+          { path: 'ai', element: <AiPage />, handle: { title: 'AI Assistant' } },
           { path: 'analytics', element: <AnalyticsPage />, handle: { title: 'Analytics' } },
           { path: 'integrations', element: <IntegrationsPage />, handle: { title: 'Integrations' } },
           { path: 'team', element: <TeamPage />, handle: { title: 'Team' } },

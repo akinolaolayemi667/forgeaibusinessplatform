@@ -152,6 +152,50 @@ export type TeamMember = {
   focus: string
 }
 
+export type DashboardKpi = {
+  id: string
+  label: string
+  value: string
+  delta: string
+  direction: 'up' | 'down' | 'flat'
+  hint: string
+}
+
+export type DashboardActivity = {
+  id: string
+  title: string
+  detail: string
+  at: string
+  href: string
+}
+
+export type DashboardFunnelStage = {
+  stage: string
+  count: number
+}
+
+export type DashboardPerformance = {
+  id: string
+  name: string
+  status: AutomationStatus
+  runs: number
+}
+
+export type DashboardRecommendation = {
+  id: string
+  title: string
+  detail: string
+  href: string
+}
+
+export type DashboardSnapshot = {
+  kpis: DashboardKpi[]
+  activity: DashboardActivity[]
+  funnel: DashboardFunnelStage[]
+  performance: DashboardPerformance[]
+  recommendations: DashboardRecommendation[]
+}
+
 export type BillingSnapshot = {
   workspaceId: string
   planName: string
