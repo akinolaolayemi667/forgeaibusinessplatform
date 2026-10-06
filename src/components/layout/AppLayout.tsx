@@ -15,6 +15,13 @@ import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed'
 import { cn } from '@/lib/cn'
 import { trapTabKey } from '@/utils/focus'
 
+/** Keep CRM, Leads, and Pipeline layouts mounted while moving between a section and its records. */
+function sectionKey(pathname: string) {
+  const parts = pathname.split('/').filter(Boolean)
+  if (parts[0] === 'app' && parts.length >= 2) return `/app/${parts[1]}`
+  return pathname
+}
+
 export function AppLayout() {
   const drawer = useDisclosure()
   const command = useDisclosure()
@@ -126,7 +133,7 @@ export function AppLayout() {
             <div className="mx-auto w-full max-w-6xl">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
-                  key={location.pathname}
+                  key={sectionKey(location.pathname)}
                   initial={reduce ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={reduce ? undefined : { opacity: 0 }}

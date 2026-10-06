@@ -1,10 +1,11 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { ChevronDown, CircleHelp, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Avatar } from '@/components/ui/Avatar'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { NotificationMenu } from '@/components/layout/NotificationMenu'
+import { useAuth } from '@/hooks/useAuth'
 import { useSession } from '@/hooks/useSession'
 import { useWorkspace } from '@/hooks/useWorkspace'
 
@@ -17,8 +18,28 @@ export function AppHeader({
 }) {
   const navigate = useNavigate()
   const { user, signOut } = useSession()
+  const { user: authUser, signOut: signOutAuth } = useAuth()
   const { workspace, workspaces, selectWorkspace } = useWorkspace()
-  const operatorName = user?.name ?? 'Guest operator'
+  const [signOutError, setSignOutError] = useState<string | null>(null)
+  const operatorName = authUser ? discordName(authUser.user_metadata, authUser.email) : (user?.name ?? 'Guest operator')
+  const signedIn = Boolean(user || authUser)
+
+  function endSession() {
+    if (!signedIn) {
+      navigate('/login')
+      return
+    }
+    setSignOutError(null)
+    void (async () => {
+      try {
+        await signOutAuth()
+        signOut()
+        navigate('/')
+      } catch {
+        setSignOutError('Sign out did not complete. Try again.')
+      }
+    })()
+  }
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-1 border-b border-stroke bg-surface px-2 sm:gap-2 sm:px-4">
@@ -72,7 +93,7 @@ export function AppHeader({
       <Dropdown
         label="Account menu"
         align="end"
-        hint={user?.email ?? 'No session in this tab'}
+        hint={authUser?.email ?? user?.email ?? 'No session in this tab'}
         trigger={
           <span className="inline-flex items-center gap-2">
             <Avatar name={operatorName} size="sm" />
@@ -84,19 +105,28 @@ export function AppHeader({
           { id: 'billing', label: 'Billing', onSelect: () => navigate('/app/billing') },
           {
             id: 'session',
-            label: user ? 'Sign out' : 'Sign in',
-            onSelect: () => {
-              if (user) {
-                signOut()
-                navigate('/')
-              } else {
-                navigate('/login')
-              }
-            },
+            label: signedIn ? 'Sign out' : 'Sign in',
+            onSelect: endSession,
           },
         ]}
       />
+      {signOutError ? (
+        <p role="alert" className="max-w-40 truncate text-xs text-danger">
+          {signOutError}
+        </p>
+      ) : null}
       </div>
     </header>
   )
+}
+
+function discordName(metadata: unknown, email: string | undefined) {
+  if (metadata && typeof metadata === 'object') {
+    const record = metadata as Record<string, unknown>
+    for (const key of ['full_name', 'name', 'preferred_username']) {
+      const value = record[key]
+      if (typeof value === 'string' && value.trim()) return value.trim()
+    }
+  }
+  return email ?? 'Operator'
 }

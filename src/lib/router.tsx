@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { MarketingLayout } from '@/components/layout/MarketingLayout'
 import { RootLayout } from '@/components/layout/RootLayout'
@@ -19,7 +20,9 @@ import { LeadsLayout } from '@/pages/app/leads/LeadsLayout'
 import { LeadsWorkspacePage } from '@/pages/app/leads/LeadsWorkspacePage'
 import { LeadRecordPage } from '@/pages/app/leads/LeadRecordPage'
 import { OverviewPage } from '@/pages/app/OverviewPage'
-import { PipelinePage } from '@/pages/app/PipelinePage'
+import { OpportunityRecordPage } from '@/pages/app/pipeline/OpportunityRecordPage'
+import { PipelineLayout } from '@/pages/app/pipeline/PipelineLayout'
+import { PipelineWorkspacePage } from '@/pages/app/pipeline/PipelineWorkspacePage'
 import { SettingsPage } from '@/pages/app/SettingsPage'
 import { TeamPage } from '@/pages/app/TeamPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
@@ -45,10 +48,13 @@ export const router = createBrowserRouter([
           { path: '/demo', element: <DemoPage />, handle: { title: 'Demo' } },
           { path: '/architecture', element: <ArchitecturePage />, handle: { title: 'Architecture' } },
           { path: '/case-study', element: <CaseStudyPage />, handle: { title: 'Case study' } },
-          { path: '/login', element: <LoginPage />, handle: { title: 'Log in' } },
-          { path: '/signup', element: <SignupPage />, handle: { title: 'Sign up' } },
         ],
       },
+      { path: '/login', element: <LoginPage />, handle: { title: 'Log in' } },
+      { path: '/signup', element: <SignupPage />, handle: { title: 'Sign up' } },
+      {
+        element: <ProtectedRoute />,
+        children: [
       {
         path: '/app',
         element: <AppLayout />,
@@ -76,7 +82,15 @@ export const router = createBrowserRouter([
             ],
           },
           { path: 'contacts', element: <ContactsPage />, handle: { title: 'Contacts' } },
-          { path: 'pipeline', element: <PipelinePage />, handle: { title: 'Pipeline' } },
+          {
+            path: 'pipeline',
+            element: <PipelineLayout />,
+            handle: { title: 'Pipeline' },
+            children: [
+              { index: true, element: <PipelineWorkspacePage /> },
+              { path: ':opportunityId', element: <OpportunityRecordPage />, handle: { title: 'Opportunity details' } },
+            ],
+          },
           { path: 'conversations', element: <ConversationsPage />, handle: { title: 'Conversations' } },
           { path: 'automations', element: <AutomationsPage />, handle: { title: 'Automations' } },
           { path: 'ai', element: <AiPage />, handle: { title: 'AI Assistant' } },
@@ -86,6 +100,8 @@ export const router = createBrowserRouter([
           { path: 'settings', element: <SettingsPage />, handle: { title: 'Settings' } },
           { path: 'billing', element: <BillingPage />, handle: { title: 'Billing' } },
           { path: '*', element: <NotFoundPage />, handle: { title: 'Not found' } },
+        ],
+      },
         ],
       },
       { path: '*', element: <NotFoundPage framed />, handle: { title: 'Not found' } },
