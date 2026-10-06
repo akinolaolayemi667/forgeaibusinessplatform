@@ -1,5 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
+import { AdminShell } from '@/components/admin/AdminShell'
+import { AdminRoute } from '@/components/auth/AdminRoute'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { SuperAdminRoute } from '@/components/auth/SuperAdminRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { MarketingLayout } from '@/components/layout/MarketingLayout'
 import { RootLayout } from '@/components/layout/RootLayout'
@@ -25,6 +28,13 @@ import { PipelineLayout } from '@/pages/app/pipeline/PipelineLayout'
 import { PipelineWorkspacePage } from '@/pages/app/pipeline/PipelineWorkspacePage'
 import { SettingsPage } from '@/pages/app/SettingsPage'
 import { TeamPage } from '@/pages/app/TeamPage'
+import { AdminActivityPage } from '@/pages/admin/AdminActivityPage'
+import { AdminAnalyticsPage } from '@/pages/admin/AdminAnalyticsPage'
+import { AdminBillingPage } from '@/pages/admin/AdminBillingPage'
+import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
+import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
+import { SuperAdminDashboardPage } from '@/pages/admin/SuperAdminDashboardPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { SignupPage } from '@/pages/auth/SignupPage'
 import { ArchitecturePage } from '@/pages/marketing/ArchitecturePage'
@@ -52,6 +62,32 @@ export const router = createBrowserRouter([
       },
       { path: '/login', element: <LoginPage />, handle: { title: 'Log in' } },
       { path: '/signup', element: <SignupPage />, handle: { title: 'Sign up' } },
+      {
+        path: '/admin',
+        element: <AdminRoute />,
+        children: [
+          {
+            element: <AdminShell />,
+            children: [
+              { index: true, element: <AdminDashboardPage />, handle: { title: 'Administration' } },
+              { path: 'users', element: <AdminUsersPage />, handle: { title: 'Team members' } },
+              { path: 'analytics', element: <AdminAnalyticsPage />, handle: { title: 'Analytics' } },
+              { path: 'activity', element: <AdminActivityPage />, handle: { title: 'Activity' } },
+              { path: 'billing', element: <AdminBillingPage />, handle: { title: 'Billing' } },
+              { path: 'settings', element: <AdminSettingsPage />, handle: { title: 'Admin settings' } },
+              { path: '*', element: <NotFoundPage />, handle: { title: 'Not found' } },
+            ],
+          },
+        ],
+      },
+      {
+        path: '/super-admin',
+        element: <SuperAdminRoute />,
+        children: [
+          { index: true, element: <SuperAdminDashboardPage />, handle: { title: 'Super admin' } },
+          { path: '*', element: <SuperAdminDashboardPage />, handle: { title: 'Super admin' } },
+        ],
+      },
       {
         element: <ProtectedRoute />,
         children: [

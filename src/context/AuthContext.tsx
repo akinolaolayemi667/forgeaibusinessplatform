@@ -1,12 +1,21 @@
 import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js'
+import { loadAuthorization } from '@/lib/authorization'
 import { clearOAuthReturn, markOAuthReturn } from '@/lib/oauthReturn'
+import { isAdmin as accessIsAdmin, isSuperAdmin as accessIsSuperAdmin } from '@/lib/permissions'
 import { supabase } from '@/lib/supabase'
+import type { Authorization, OrganizationRole, OrganizationSummary, PlatformRole } from '@/types/roles'
 
 export type AuthContextValue = {
   session: Session | null
   user: User | null
   loading: boolean
+  accessStatus: Authorization['status']
+  role: PlatformRole | null
+  organization: OrganizationSummary | null
+  organizationRole: OrganizationRole | null
+  isAdmin: boolean
+  isSuperAdmin: boolean
   signInWithGoogle: () => Promise<void>
   signInWithDiscord: () => Promise<void>
   signOut: () => Promise<void>
@@ -17,6 +26,7 @@ export const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [access, setAccess] = useState<Authorization>({ status: 'loading' })
 
   useEffect(() => {
     let active = true
@@ -33,11 +43,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const userId = session?.user.id
+
+  useEffect(() => {
+    if (loading) return
+    if (!userId) {
+      setAccess({ status: 'anonymous' })
+      return
+    }
+
+    let active = true
+    setAccess({ status: 'loading' })
+    void loadAuthorization(userId).then((next) => {
+      if (active) setAccess(next)
+    })
+
+    return () => {
+      active = false
+    }
+  }, [loading, userId])
+
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
       user: session?.user ?? null,
       loading,
+      accessStatus: access.status,
+      role: access.status === 'ready' ? access.platformRole : null,
+      organization: access.status === 'ready' ? access.organization : null,
+      organizationRole: access.status === 'ready' ? access.organizationRole : null,
+      isAdmin: accessIsAdmin(access),
+      isSuperAdmin: accessIsSuperAdmin(access),
       signInWithGoogle: async () => {
         markOAuthReturn()
         const { error } = await supabase.auth.signInWithOAuth({
@@ -61,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) throw error
       },
     }),
-    [loading, session],
+    [access, loading, session],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
