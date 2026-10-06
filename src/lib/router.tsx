@@ -15,7 +15,9 @@ import { CrmOverviewPage } from '@/pages/app/crm/CrmOverviewPage'
 import { ContactsPage } from '@/pages/app/ContactsPage'
 import { ConversationsPage } from '@/pages/app/ConversationsPage'
 import { IntegrationsPage } from '@/pages/app/IntegrationsPage'
-import { LeadsPage } from '@/pages/app/LeadsPage'
+import { LeadsLayout } from '@/pages/app/leads/LeadsLayout'
+import { LeadsWorkspacePage } from '@/pages/app/leads/LeadsWorkspacePage'
+import { LeadRecordPage } from '@/pages/app/leads/LeadRecordPage'
 import { OverviewPage } from '@/pages/app/OverviewPage'
 import { PipelinePage } from '@/pages/app/PipelinePage'
 import { SettingsPage } from '@/pages/app/SettingsPage'
@@ -64,7 +66,15 @@ export const router = createBrowserRouter([
               { path: 'companies/:companyId', element: <CrmCompanyPage />, handle: { title: 'Company' } },
             ],
           },
-          { path: 'leads', element: <LeadsPage />, handle: { title: 'Leads' } },
+          {
+            path: 'leads',
+            element: <LeadsLayout />,
+            handle: { title: 'Leads' },
+            children: [
+              { index: true, element: <LeadsWorkspacePage /> },
+              { path: ':leadId', element: <LeadRecordPage />, handle: { title: 'Lead details' } },
+            ],
+          },
           { path: 'contacts', element: <ContactsPage />, handle: { title: 'Contacts' } },
           { path: 'pipeline', element: <PipelinePage />, handle: { title: 'Pipeline' } },
           { path: 'conversations', element: <ConversationsPage />, handle: { title: 'Conversations' } },
