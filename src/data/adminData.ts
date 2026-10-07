@@ -79,17 +79,6 @@ export const adminActivity: AdminActivityItem[] = [
   { id: 'a10', clock: '15:22', day: 'Oct 4', actor: 'System', action: 'Briefing generated', resource: 'Peck Freight', status: 'Success', category: 'AI', title: 'Briefing generated', detail: 'Assistant prepared a reply brief' },
 ]
 
-export const adminMembers: AdminMember[] = [
-  { id: 'u1', name: 'Sarah Mitchell', email: 'sarah@harbor.co', role: 'Admin', status: 'Active', lastActive: 'Today, 09:42', joined: 'Mar 12, 2026' },
-  { id: 'u2', name: 'David Carter', email: 'david@harbor.co', role: 'Member', status: 'Active', lastActive: 'Today, 09:31', joined: 'Apr 2, 2026' },
-  { id: 'u3', name: 'Michael Reed', email: 'michael@harbor.co', role: 'Member', status: 'Invited', lastActive: 'Invite pending', joined: 'Oct 6, 2026' },
-  { id: 'u4', name: 'Priya Shah', email: 'priya@harbor.co', role: 'Member', status: 'Active', lastActive: 'Yesterday', joined: 'May 19, 2026' },
-  { id: 'u5', name: 'Jonah Peck', email: 'jonah@peckfreight.co', role: 'Member', status: 'Inactive', lastActive: 'Sep 2, 2026', joined: 'Jan 8, 2026' },
-  { id: 'u6', name: 'Lena Voss', email: 'lena@vossclinic.co', role: 'Admin', status: 'Active', lastActive: 'Today, 08:05', joined: 'Feb 14, 2026' },
-  { id: 'u7', name: 'Nia Okonkwo', email: 'nia@harbor.co', role: 'Owner', status: 'Active', lastActive: 'Today, 07:48', joined: 'Nov 3, 2025' },
-  { id: 'u8', name: 'Amira Solano', email: 'amira@solano.co', role: 'Member', status: 'Invited', lastActive: 'Invite pending', joined: 'Oct 1, 2026' },
-]
-
 export const adminRanges: AdminRange[] = ['7D', '30D', '90D', '12M']
 
 const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']

@@ -4,9 +4,11 @@ export function AdminFilters({
   search,
   onSearch,
   filters,
+  placeholder = 'Search records',
 }: {
   search: string
   onSearch: (value: string) => void
+  placeholder?: string
   filters: { id: string; label: string; value: string; options: FilterOption[]; onChange: (value: string) => void }[]
 }) {
   return (
@@ -17,7 +19,7 @@ export function AdminFilters({
           value={search}
           onChange={(event) => onSearch(event.target.value)}
           className="h-10 border border-stroke bg-ink px-3 text-sm text-paper outline-none focus-visible:border-ember"
-          placeholder="Search records"
+          placeholder={placeholder}
         />
       </label>
       {filters.map((filter) => (

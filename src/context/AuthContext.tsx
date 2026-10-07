@@ -1,7 +1,7 @@
 import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js'
 import { loadAuthorization } from '@/lib/authorization'
-import { clearOAuthReturn, markOAuthReturn } from '@/lib/oauthReturn'
+import { oauthRedirectTo } from '@/lib/oauthReturn'
 import { isAdmin as accessIsAdmin, isSuperAdmin as accessIsSuperAdmin } from '@/lib/permissions'
 import { supabase } from '@/lib/supabase'
 import type { Authorization, OrganizationRole, OrganizationSummary, PlatformRole } from '@/types/roles'
@@ -75,20 +75,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin: accessIsAdmin(access),
       isSuperAdmin: accessIsSuperAdmin(access),
       signInWithGoogle: async () => {
-        markOAuthReturn()
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
-          options: { redirectTo: window.location.origin },
+          options: { redirectTo: oauthRedirectTo() },
         })
-        if (error) {
-          clearOAuthReturn()
-          throw error
-        }
+        if (error) throw error
       },
       signInWithDiscord: async () => {
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'discord',
-          options: { redirectTo: window.location.origin },
+          options: { redirectTo: oauthRedirectTo() },
         })
         if (error) throw error
       },

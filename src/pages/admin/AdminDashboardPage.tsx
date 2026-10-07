@@ -5,6 +5,8 @@ import { AdminMetricCard } from '@/components/admin/AdminMetricCard'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { buttonStyles } from '@/components/ui/Button'
 import { adminActivity, adminMetrics, adminPerformance } from '@/data/adminData'
+import { useAuth } from '@/hooks/useAuth'
+import { useOrganizationMembers } from '@/hooks/useOrganizationMembers'
 
 const actions = [
   { to: '/admin/users?invite=1', label: 'Invite User' },
@@ -15,11 +17,20 @@ const actions = [
 ]
 
 export function AdminDashboardPage() {
+  const { organization } = useAuth()
+  const { members, loading, error } = useOrganizationMembers(organization?.id ?? null)
+  const metrics = adminMetrics.map((metric) => {
+    if (metric.id !== 'users') return metric
+    if (!organization || loading) return { ...metric, value: '—', hint: 'Organization members' }
+    if (error) return { ...metric, value: '—', hint: 'Member count unavailable' }
+    return { ...metric, value: String(members.length), hint: 'Organization members' }
+  })
+
   return (
     <>
       <PageHeader title="ADMINISTRATION" description="Manage your organization, users, operations and account." />
       <section aria-label="Organization metrics" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {adminMetrics.map((metric) => (
+        {metrics.map((metric) => (
           <AdminMetricCard key={metric.id} metric={metric} />
         ))}
       </section>

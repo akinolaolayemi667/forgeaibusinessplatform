@@ -1,25 +1,20 @@
 import { useEffect } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
+import { Outlet, useLocation } from 'react-router-dom'
 import { useRouteTitle } from '@/hooks/useRouteTitle'
-import { clearOAuthReturn, takeOAuthReturn } from '@/lib/oauthReturn'
+import { clearAuthDestination, peekAuthDestination } from '@/lib/oauthReturn'
 
 export function RootLayout() {
   useRouteTitle()
-  const { user, loading } = useAuth()
   const location = useLocation()
-  const navigate = useNavigate()
 
   useEffect(() => {
-    if (loading) return
-    if (user) {
-      if (!takeOAuthReturn() || location.pathname.startsWith('/app')) return
-      navigate('/app', { replace: true })
-      return
+    const destination = peekAuthDestination()
+    if (!destination) return
+    const here = `${location.pathname}${location.search}`
+    if (here === destination || location.pathname === destination.split('?')[0]) {
+      clearAuthDestination()
     }
-    const timeout = window.setTimeout(clearOAuthReturn, 0)
-    return () => window.clearTimeout(timeout)
-  }, [loading, location.pathname, navigate, user])
+  }, [location.pathname, location.search])
 
   return <Outlet />
 }

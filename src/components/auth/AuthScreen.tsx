@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
+import { peekAuthDestination } from '@/lib/oauthReturn'
 import { motion, useReducedMotion } from 'framer-motion'
 import { AuthStatus } from '@/components/auth/AuthStatus'
 import { Logo } from '@/components/layout/Logo'
@@ -65,7 +66,11 @@ export function AuthScreen({
   }
 
   if (loading) return <AuthStatus />
-  if (user) return <Navigate to="/app" replace />
+  if (user) {
+    const destination = peekAuthDestination()
+    const returningToAuth = !destination || destination === '/login' || destination.startsWith('/login?') || destination === '/signup' || destination.startsWith('/signup?')
+    return <Navigate to={returningToAuth ? '/app' : destination} replace />
+  }
 
   return (
     <div className="forge-canvas flex min-h-dvh flex-col text-copy">
