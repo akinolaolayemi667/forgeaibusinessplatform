@@ -1,52 +1,70 @@
-import { useState } from 'react'
-import { AdminChart } from '@/components/admin/AdminChart'
-import { PageHeader } from '@/components/ui/PageHeader'
-import { adminRanges, analyticsByRange, type AdminRange } from '@/data/adminData'
-import { cn } from '@/lib/cn'
-
-const panels = [
-  { key: 'growth', title: 'Organization Growth', group: 'Organization Overview' },
-  { key: 'userActivity', title: 'User Activity', group: 'Team Activity' },
-  { key: 'leadGrowth', title: 'Lead Growth', group: 'Operational Performance' },
-  { key: 'automationRuns', title: 'Automation Runs', group: 'AI & Automation' },
-  { key: 'aiUsage', title: 'AI Usage', group: 'AI & Automation', unit: '%' },
-  { key: 'conversion', title: 'Conversion Rate', group: 'Operational Performance', unit: '%' },
-] as const
+import { ActivityTimeline } from '@/components/admin/analytics/ActivityTimeline'
+import { AIUsagePanel } from '@/components/admin/analytics/AIUsagePanel'
+import { AnalyticsHeader } from '@/components/admin/analytics/AnalyticsHeader'
+import { AnalyticsKpiCard } from '@/components/admin/analytics/AnalyticsKpiCard'
+import { AnalyticsEmpty, AnalyticsSkeleton } from '@/components/admin/analytics/AnalyticsPanel'
+import { AutomationAnalytics } from '@/components/admin/analytics/AutomationAnalytics'
+import { ConversationAnalytics } from '@/components/admin/analytics/ConversationAnalytics'
+import { LeadFunnel } from '@/components/admin/analytics/LeadFunnel'
+import { PerformanceInsights } from '@/components/admin/analytics/PerformanceInsights'
+import { PipelineHealth } from '@/components/admin/analytics/PipelineHealth'
+import { RevenuePipelineChart } from '@/components/admin/analytics/RevenuePipelineChart'
+import { TeamPerformance } from '@/components/admin/analytics/TeamPerformance'
+import { Button } from '@/components/ui/Button'
+import { useAdminAnalytics } from '@/hooks/useAdminAnalytics'
 
 export function AdminAnalyticsPage() {
-  const [range, setRange] = useState<AdminRange>('30D')
-  const data = analyticsByRange[range]
+  const analytics = useAdminAnalytics()
+  const model = analytics.model
 
   return (
     <>
-      <PageHeader
-        title="ANALYTICS"
-        description="Organization growth, operations, and allowance use for the selected range."
-        actions={
-          <div role="tablist" aria-label="Date range" className="flex border border-stroke">
-            {adminRanges.map((item) => (
-              <button
-                key={item}
-                type="button"
-                role="tab"
-                aria-selected={range === item}
-                className={cn('h-10 px-3 font-mono text-xs', range === item ? 'bg-ember text-on-accent' : 'text-ash hover:bg-wash hover:text-paper')}
-                onClick={() => setRange(item)}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        }
+      <AnalyticsHeader
+        range={analytics.range}
+        refreshing={analytics.refreshing}
+        onRange={analytics.setRange}
+        onRefresh={analytics.refresh}
       />
-      <div className="grid gap-4 lg:grid-cols-2">
-        {panels.map((panel) => (
-          <div key={panel.key} className="flex flex-col gap-2">
-            <p className="type-kicker text-ash">{panel.group}</p>
-            <AdminChart title={panel.title} points={data[panel.key]} unit={'unit' in panel ? panel.unit : ''} />
+      {analytics.demoLoading ? <AnalyticsSkeleton label="Loading analytics." rows={6} /> : null}
+      {analytics.demoError ? (
+        <div className="border border-stroke bg-surface-raised px-4 py-6" role="alert">
+          <p className="text-sm text-paper">{analytics.demoError}</p>
+          <Button className="mt-3" variant="outline" onClick={analytics.refresh}>Try again</Button>
+        </div>
+      ) : null}
+      {!analytics.demoLoading && !analytics.demoError && !model ? (
+        <AnalyticsEmpty title="NO ANALYTICS DATA" detail="There is nothing to calculate for this organization yet." />
+      ) : null}
+      {model ? (
+        <>
+          <section aria-label="KPI overview" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {model.kpis.map((metric) => (
+              <AnalyticsKpiCard key={metric.id} metric={metric} />
+            ))}
+          </section>
+          <RevenuePipelineChart points={model.revenue} hasRecords={model.revenueHasRecords} />
+          <div className="grid gap-4 xl:grid-cols-2">
+            <LeadFunnel stages={model.funnel} />
+            <PipelineHealth metrics={model.pipelineMetrics} stages={model.pipelineStages} hasRecords={model.pipelineHasRecords} />
           </div>
-        ))}
-      </div>
+          <TeamPerformance
+            rows={model.team}
+            loading={analytics.membersLoading}
+            error={analytics.membersError}
+            hasOrganization={Boolean(analytics.organization)}
+            onRetry={analytics.reloadMembers}
+          />
+          <div className="grid gap-4 xl:grid-cols-2">
+            <AutomationAnalytics automation={model.automation} />
+            <AIUsagePanel ai={model.ai} />
+          </div>
+          <ConversationAnalytics conversations={model.conversations} />
+          <div className="grid gap-4 xl:grid-cols-2">
+            <ActivityTimeline events={model.activity} />
+            <PerformanceInsights insights={model.insights} />
+          </div>
+        </>
+      ) : null}
     </>
   )
 }
