@@ -5,9 +5,11 @@ import { AdminStatusBadge } from '@/components/admin/AdminStatusBadge'
 import { Button } from '@/components/ui/Button'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { TextField } from '@/components/ui/TextField'
-import { adminIntegrations, adminNotificationDefaults, adminOrganization } from '@/data/adminData'
+import { adminIntegrations, adminNotificationDefaults } from '@/data/adminData'
 import { useAuth } from '@/hooks/useAuth'
+import { useOrganizationSettings } from '@/hooks/useOrganizationSettings'
 import { cn } from '@/lib/cn'
+import { normalizeOrganizationSlug, validateOrganizationName, validateOrganizationSlug } from '@/lib/organizationSettings'
 
 const sections = [
   { id: 'general', label: 'General' },
@@ -19,20 +21,37 @@ const sections = [
 ] as const
 
 export function AdminSettingsPage() {
-  const { user, organization } = useAuth()
+  const { user, organization, organizationRole, isSuperAdmin, refreshAccess } = useAuth()
+  const settings = useOrganizationSettings(organization?.id ?? null)
   const [section, setSection] = useState<(typeof sections)[number]['id']>('general')
-  const [name, setName] = useState(organization?.name ?? adminOrganization.name)
-  const [slug, setSlug] = useState(organization?.slug ?? adminOrganization.slug)
-  const [timezone, setTimezone] = useState(adminOrganization.timezone)
-  const [currency, setCurrency] = useState(adminOrganization.currency)
+  const [attempted, setAttempted] = useState(false)
   const [notes, setNotes] = useState(adminNotificationDefaults)
-  const [saved, setSaved] = useState('')
   const provider = providerName(user?.app_metadata)
+  const canEdit = isSuperAdmin || organizationRole === 'owner' || organizationRole === 'admin'
+  const nameError = attempted || settings.name !== (settings.record?.name ?? '') ? validateOrganizationName(settings.name) : null
+  const slugError = attempted || settings.slug !== (settings.record?.slug ?? '') ? validateOrganizationSlug(settings.slug) : null
+  const unchanged = Boolean(
+    settings.record &&
+      settings.name.trim() === settings.record.name &&
+      normalizeOrganizationSlug(settings.slug) === settings.record.slug,
+  )
+
+  async function saveGeneral() {
+    setAttempted(true)
+    if (!canEdit || !settings.record || validateOrganizationName(settings.name) || validateOrganizationSlug(settings.slug) || unchanged) return
+    const saved = await settings.save({ name: settings.name, slug: settings.slug })
+    if (!saved) return
+    try {
+      await refreshAccess()
+    } catch (caught) {
+      if (import.meta.env.DEV) console.info('organization access refresh', caught)
+    }
+  }
 
   return (
     <>
-      <PageHeader title="SETTINGS" description="Organization controls for this session. Secrets are not shown." />
-      <div className="grid gap-4 lg:grid-cols-[12rem_minmax(0,1fr)]">
+      <PageHeader title="SETTINGS" description="Organization name and slug are stored for this organization. Other controls on this page are not persisted." />
+      <div className="grid min-w-0 gap-4 lg:grid-cols-[12rem_minmax(0,1fr)]">
         <nav aria-label="Settings sections" className="flex gap-2 overflow-x-auto lg:flex-col">
           {sections.map((item) => (
             <button
@@ -46,30 +65,66 @@ export function AdminSettingsPage() {
             </button>
           ))}
         </nav>
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4">
           {section === 'general' ? (
-            <AdminSettingsSection id="general" title="General" description="Name, address, and defaults used across the organization.">
-              <TextField id="org-name" label="Organization Name" value={name} onChange={setName} />
-              <TextField id="org-slug" label="Organization Slug" value={slug} onChange={setSlug} />
-              <TextField id="org-timezone" label="Timezone" value={timezone} onChange={setTimezone} />
-              <TextField id="org-currency" label="Default Currency" value={currency} onChange={setCurrency} />
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={() => setSaved('General settings saved for this session.')}
-                >
-                  Save general
-                </Button>
-                {saved ? <p className="text-sm text-ash">{saved}</p> : null}
-              </div>
+            <AdminSettingsSection id="general" title="General" description="Name and slug written to this organization.">
+              {!organization ? <p className="text-sm text-ash">No organization is attached to this session.</p> : null}
+              {organization && settings.loading ? <p className="text-sm text-ash">Loading organization settings.</p> : null}
+              {settings.error ? <p role="alert" className="text-sm text-badge-danger-fg">{settings.error}</p> : null}
+              {organization && !settings.loading && settings.record ? (
+                <>
+                  <TextField
+                    id="org-name"
+                    label="Organization Name"
+                    value={settings.name}
+                    onChange={settings.setName}
+                    disabled={!canEdit || settings.saving}
+                    error={nameError ?? undefined}
+                  />
+                  <TextField
+                    id="org-slug"
+                    label="Organization Slug"
+                    value={settings.slug}
+                    onChange={settings.setSlug}
+                    disabled={!canEdit || settings.saving}
+                    hint="Lowercase letters, numbers, and single hyphens. 2 to 48 characters."
+                    error={slugError ?? undefined}
+                  />
+                  {canEdit ? null : <p className="text-sm text-ash">Owners and admins can update this organization.</p>}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button loading={settings.saving} disabled={!canEdit || unchanged || Boolean(nameError || slugError)} onClick={() => void saveGeneral()}>
+                      Save organization
+                    </Button>
+                    {settings.notice ? <p role="status" className="text-sm text-ash">{settings.notice}</p> : null}
+                  </div>
+                </>
+              ) : null}
             </AdminSettingsSection>
           ) : null}
           {section === 'organization' ? (
             <AdminSettingsSection id="organization" title="Organization" description="The organization attached to this admin session.">
-              <p className="text-sm text-paper">{name}</p>
-              <p className="font-mono text-xs text-ash">{slug}</p>
-              <p className="text-sm text-ash">
-                {timezone} · {currency}
-              </p>
+              {settings.record ? (
+                <dl className="grid gap-3 text-sm">
+                  <div>
+                    <dt className="type-kicker text-ash">Name</dt>
+                    <dd className="mt-1 break-words text-paper">{settings.record.name}</dd>
+                  </div>
+                  <div>
+                    <dt className="type-kicker text-ash">Slug</dt>
+                    <dd className="mt-1 break-all font-mono text-xs text-paper">{settings.record.slug}</dd>
+                  </div>
+                  <div>
+                    <dt className="type-kicker text-ash">Organization ID</dt>
+                    <dd className="mt-1 break-all font-mono text-xs text-ash">{settings.record.id}</dd>
+                  </div>
+                  <div>
+                    <dt className="type-kicker text-ash">Updated</dt>
+                    <dd className="mt-1 text-paper">{formatStamp(settings.record.updatedAt)}</dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="text-sm text-ash">{settings.loading ? 'Loading organization settings.' : 'No organization is attached to this session.'}</p>
+              )}
             </AdminSettingsSection>
           ) : null}
           {section === 'team' ? (
@@ -80,7 +135,7 @@ export function AdminSettingsPage() {
             </AdminSettingsSection>
           ) : null}
           {section === 'notifications' ? (
-            <AdminSettingsSection id="notifications" title="Notifications" description="Which organization alerts this preview keeps enabled.">
+            <AdminSettingsSection id="notifications" title="Notifications" description="Not stored. These toggles stay in this browser session only.">
               <AdminToggle id="notify-email" label="Email notifications" checked={notes.email} onChange={(email) => setNotes({ ...notes, email })} />
               <AdminToggle id="notify-automation" label="Automation alerts" checked={notes.automation} onChange={(automation) => setNotes({ ...notes, automation })} />
               <AdminToggle id="notify-team" label="Team activity alerts" checked={notes.team} onChange={(team) => setNotes({ ...notes, team })} />
@@ -92,7 +147,11 @@ export function AdminSettingsPage() {
               <dl className="grid gap-3 text-sm">
                 <div>
                   <dt className="type-kicker text-ash">Session</dt>
-                  <dd className="mt-1 text-paper">{user?.email ?? 'No authenticated email on this session'}</dd>
+                  <dd className="mt-1 break-all text-paper">{user?.email ?? 'No authenticated email on this session'}</dd>
+                </div>
+                <div>
+                  <dt className="type-kicker text-ash">Organization role</dt>
+                  <dd className="mt-1 text-paper">{organizationRole ?? 'No organization role on this session'}</dd>
                 </div>
                 <div>
                   <dt className="type-kicker text-ash">OAuth providers</dt>
@@ -102,15 +161,11 @@ export function AdminSettingsPage() {
                   <dt className="type-kicker text-ash">Login security</dt>
                   <dd className="mt-1 text-paper">Access tokens stay with the Supabase session in this browser.</dd>
                 </div>
-                <div>
-                  <dt className="type-kicker text-ash">Active sessions</dt>
-                  <dd className="mt-1 text-paper">This browser</dd>
-                </div>
               </dl>
             </AdminSettingsSection>
           ) : null}
           {section === 'integrations' ? (
-            <AdminSettingsSection id="integrations" title="Integrations" description="Connections available to the organization.">
+            <AdminSettingsSection id="integrations" title="Integrations" description="Sample connection states. Not read from this organization.">
               <ul className="flex flex-col gap-2">
                 {adminIntegrations.map((item) => (
                   <li key={item.id} className="flex items-center justify-between gap-3 border border-stroke px-3 py-3">
@@ -128,6 +183,12 @@ export function AdminSettingsPage() {
       </div>
     </>
   )
+}
+
+function formatStamp(iso: string) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return 'Unknown time'
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }).format(date)
 }
 
 function providerName(metadata: unknown) {

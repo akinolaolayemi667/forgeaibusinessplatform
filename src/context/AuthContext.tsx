@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js'
 import { loadAuthorization } from '@/lib/authorization'
 import { oauthRedirectTo } from '@/lib/oauthReturn'
@@ -19,6 +19,7 @@ export type AuthContextValue = {
   signInWithGoogle: () => Promise<void>
   signInWithDiscord: () => Promise<void>
   signOut: () => Promise<void>
+  refreshAccess: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
@@ -44,6 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const userId = session?.user.id
+
+  const refreshAccess = useCallback(async () => {
+    if (!userId) return
+    const next = await loadAuthorization(userId)
+    setAccess(next)
+  }, [userId])
 
   useEffect(() => {
     if (loading) return
@@ -92,8 +99,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { error } = await supabase.auth.signOut({ scope: 'local' })
         if (error) throw error
       },
+      refreshAccess,
     }),
-    [access, loading, session],
+    [access, loading, refreshAccess, session],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

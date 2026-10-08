@@ -7,6 +7,7 @@ type TextFieldProps = {
   onChange: (value: string) => void
   type?: string
   autoComplete?: string
+  disabled?: boolean
   error?: string
   hint?: string
   className?: string
@@ -18,7 +19,8 @@ export function TextField({
   value,
   onChange,
   type = 'text',
-  autoComplete,
+  autoComplete = 'off',
+  disabled = false,
   error,
   hint,
   className,
@@ -37,6 +39,7 @@ export function TextField({
         type={type}
         value={value}
         autoComplete={autoComplete}
+        disabled={disabled}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
         onChange={(event) => onChange(event.target.value)}

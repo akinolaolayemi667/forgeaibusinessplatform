@@ -75,12 +75,14 @@ export function withSessionIdentity(members: OrganizationMember[], user: User | 
   })
 }
 
+// A successful role change is recorded by organization_members_audit_update. Do not insert an audit row here.
 export async function updateOrganizationMemberRole(membershipId: string, role: AssignableMemberRole) {
   const { data, error } = await supabase.from('organization_members').update({ role }).eq('id', membershipId).select('id')
   if (error) throw error
   if (!changed(data)) throw new Error('not_authorized')
 }
 
+// A successful removal is recorded by organization_members_audit_delete. Do not insert an audit row here.
 export async function removeOrganizationMember(membershipId: string) {
   const { data, error } = await supabase.from('organization_members').delete().eq('id', membershipId).select('id')
   if (error) throw error
