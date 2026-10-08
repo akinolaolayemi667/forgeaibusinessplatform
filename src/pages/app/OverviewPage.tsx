@@ -4,10 +4,14 @@ import { DashboardView } from '@/components/dashboard/DashboardView'
 import { buttonStyles } from '@/components/ui/Button'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { useAsyncData } from '@/hooks/useAsyncData'
+import { useAuth } from '@/hooks/useAuth'
 import { useWorkspace } from '@/hooks/useWorkspace'
+import { signedInConsoles } from '@/lib/permissions'
 
 export function OverviewPage() {
   const { workspace } = useWorkspace()
+  const { accessStatus, isAdmin, isSuperAdmin } = useAuth()
+  const consoles = accessStatus === 'ready' ? signedInConsoles({ isAdmin, isSuperAdmin }) : []
   const query = useAsyncData(`dashboard:${workspace.id}`, () => forgeData.getDashboard(workspace.id))
 
   return (
@@ -18,7 +22,12 @@ export function OverviewPage() {
         description="Revenue, pipeline, and the work that still needs a person."
         actions={
           <>
-            <Link to="/app/leads" className={buttonStyles()}>
+            {consoles.map((item) => (
+              <Link key={item.id} to={item.to} className={buttonStyles(item.id === 'platform-control' ? 'outline' : 'primary')}>
+                {item.label}
+              </Link>
+            ))}
+            <Link to="/app/leads" className={buttonStyles(consoles.length > 0 ? 'outline' : 'primary')}>
               Review leads
             </Link>
             <Link to="/app/pipeline" className={buttonStyles('outline')}>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { peekAuthDestination } from '@/lib/oauthReturn'
+import { defaultSignedInPath } from '@/lib/permissions'
 import { motion, useReducedMotion } from 'framer-motion'
 import { AuthStatus } from '@/components/auth/AuthStatus'
 import { Logo } from '@/components/layout/Logo'
@@ -48,7 +49,7 @@ export function AuthScreen({
   alternate: { href: '/login' | '/signup'; prompt: string; label: string }
 }) {
   const reduce = useReducedMotion()
-  const { user, loading, signInWithGoogle, signInWithDiscord } = useAuth()
+  const { user, loading, accessStatus, isAdmin, isSuperAdmin, signInWithGoogle, signInWithDiscord } = useAuth()
   const [pending, setPending] = useState<'google' | 'discord' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -65,11 +66,11 @@ export function AuthScreen({
     }
   }
 
-  if (loading) return <AuthStatus />
+  if (loading || (user && accessStatus === 'loading')) return <AuthStatus />
   if (user) {
     const destination = peekAuthDestination()
     const returningToAuth = !destination || destination === '/login' || destination.startsWith('/login?') || destination === '/signup' || destination.startsWith('/signup?')
-    return <Navigate to={returningToAuth ? '/app' : destination} replace />
+    return <Navigate to={returningToAuth ? defaultSignedInPath({ isAdmin, isSuperAdmin }) : destination} replace />
   }
 
   return (

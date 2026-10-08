@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { adminActivity, adminOrganization } from '@/data/adminData'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { useAuth } from '@/hooks/useAuth'
+import { signedInConsoles } from '@/lib/permissions'
 import { useSession } from '@/hooks/useSession'
 
 export function AdminHeader({ menuButton }: { menuButton: ReactNode }) {
@@ -16,6 +17,7 @@ export function AdminHeader({ menuButton }: { menuButton: ReactNode }) {
   const roleLabel = isSuperAdmin ? 'Super admin' : organizationRole === 'owner' ? 'Owner' : role === 'admin' || organizationRole === 'admin' ? 'Admin' : 'Admin'
   const organizationName = organization?.name ?? adminOrganization.name
   const signedIn = Boolean(user || authUser)
+  const platformLink = signedInConsoles({ isAdmin: false, isSuperAdmin }).find((item) => item.id === 'platform-control')
 
   function endSession() {
     if (!signedIn) {
@@ -68,6 +70,7 @@ export function AdminHeader({ menuButton }: { menuButton: ReactNode }) {
             { id: 'identity-email', label: email, disabled: true, onSelect: () => undefined },
             { id: 'identity-role', label: roleLabel, disabled: true, onSelect: () => undefined },
             { id: 'workspace', label: 'Open Workspace', onSelect: () => navigate('/app') },
+            ...(platformLink ? [{ id: platformLink.id, label: platformLink.label, onSelect: () => navigate(platformLink.to) }] : []),
             { id: 'account', label: 'Account', onSelect: () => navigate('/admin/settings') },
             { id: 'sign-out', label: signedIn ? 'Sign out' : 'Sign in', onSelect: endSession },
           ]}

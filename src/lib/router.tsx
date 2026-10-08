@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { AdminShell } from '@/components/admin/AdminShell'
+import { SuperAdminShell } from '@/components/super-admin/SuperAdminShell'
 import { AdminRoute } from '@/components/auth/AdminRoute'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { SuperAdminRoute } from '@/components/auth/SuperAdminRoute'
@@ -34,7 +35,8 @@ import { AdminBillingPage } from '@/pages/admin/AdminBillingPage'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
-import { SuperAdminDashboardPage } from '@/pages/admin/SuperAdminDashboardPage'
+import { SuperAdminDashboardPage } from '@/pages/super-admin/SuperAdminDashboardPage'
+import { SuperAdminPlaceholderPage } from '@/pages/super-admin/SuperAdminPlaceholderPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { SignupPage } from '@/pages/auth/SignupPage'
 import { ArchitecturePage } from '@/pages/marketing/ArchitecturePage'
@@ -84,8 +86,24 @@ export const router = createBrowserRouter([
         path: '/super-admin',
         element: <SuperAdminRoute />,
         children: [
-          { index: true, element: <SuperAdminDashboardPage />, handle: { title: 'Super admin' } },
-          { path: '*', element: <SuperAdminDashboardPage />, handle: { title: 'Super admin' } },
+          {
+            element: <SuperAdminShell />,
+            children: [
+              { index: true, element: <SuperAdminDashboardPage />, handle: { title: 'Platform control' } },
+              { path: 'organizations', element: <SuperAdminPlaceholderPage title="ORGANIZATIONS" phase="COMING IN SUPER-2" />, handle: { title: 'Organizations' } },
+              { path: 'users', element: <SuperAdminPlaceholderPage title="USERS" phase="COMING IN SUPER-2" />, handle: { title: 'Platform users' } },
+              { path: 'admins', element: <SuperAdminPlaceholderPage title="ADMINS" phase="COMING IN SUPER-2" />, handle: { title: 'Platform admins' } },
+              { path: 'analytics', element: <SuperAdminPlaceholderPage title="ANALYTICS" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'Platform analytics' } },
+              { path: 'revenue', element: <SuperAdminPlaceholderPage title="REVENUE" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'Revenue' } },
+              { path: 'ai-usage', element: <SuperAdminPlaceholderPage title="AI USAGE" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'AI usage' } },
+              { path: 'plans', element: <SuperAdminPlaceholderPage title="PLANS" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'Plans' } },
+              { path: 'integrations', element: <SuperAdminPlaceholderPage title="INTEGRATIONS" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'Platform integrations' } },
+              { path: 'system', element: <SuperAdminPlaceholderPage title="SYSTEM" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'System' } },
+              { path: 'audit-logs', element: <SuperAdminPlaceholderPage title="AUDIT LOGS" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'Platform audit logs' } },
+              { path: 'settings', element: <SuperAdminPlaceholderPage title="SETTINGS" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'Platform settings' } },
+              { path: '*', element: <NotFoundPage />, handle: { title: 'Not found' } },
+            ],
+          },
         ],
       },
       {

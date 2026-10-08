@@ -22,6 +22,19 @@ const platformPermissions: Permission[] = [
   'platform.audit',
 ]
 
+export function signedInConsoles(access: { isAdmin: boolean; isSuperAdmin: boolean }) {
+  return [
+    ...(access.isAdmin ? [{ id: 'organization-admin', to: '/admin', label: 'Admin' }] : []),
+    ...(access.isSuperAdmin ? [{ id: 'platform-control', to: '/super-admin', label: 'Super admin' }] : []),
+  ]
+}
+
+export function defaultSignedInPath(access: { isAdmin: boolean; isSuperAdmin: boolean }) {
+  if (access.isSuperAdmin) return '/super-admin'
+  if (access.isAdmin) return '/admin'
+  return '/app'
+}
+
 export function isSuperAdmin(access: Authorization) {
   return access.status === 'ready' && access.platformRole === 'super_admin'
 }

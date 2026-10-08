@@ -1,11 +1,13 @@
 import { useState, type ReactNode } from 'react'
 import { ChevronDown, CircleHelp, Search } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Avatar } from '@/components/ui/Avatar'
+import { buttonStyles } from '@/components/ui/Button'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { NotificationMenu } from '@/components/layout/NotificationMenu'
 import { useAuth } from '@/hooks/useAuth'
+import { signedInConsoles } from '@/lib/permissions'
 import { useSession } from '@/hooks/useSession'
 import { useWorkspace } from '@/hooks/useWorkspace'
 
@@ -18,7 +20,8 @@ export function AppHeader({
 }) {
   const navigate = useNavigate()
   const { user, signOut } = useSession()
-  const { user: authUser, signOut: signOutAuth } = useAuth()
+  const { user: authUser, signOut: signOutAuth, accessStatus, isAdmin, isSuperAdmin } = useAuth()
+  const consoles = accessStatus === 'ready' ? signedInConsoles({ isAdmin, isSuperAdmin }) : []
   const { workspace, workspaces, selectWorkspace } = useWorkspace()
   const [signOutError, setSignOutError] = useState<string | null>(null)
   const operatorName = authUser ? discordName(authUser.user_metadata, authUser.email) : (user?.name ?? 'Guest operator')
@@ -48,6 +51,11 @@ export function AppHeader({
         <Breadcrumb />
       </div>
       <div className="ml-auto flex min-w-0 items-center gap-1 sm:gap-2">
+      {consoles.map((item) => (
+        <Link key={item.id} to={item.to} className={buttonStyles(item.id === 'platform-control' ? 'outline' : 'primary', 'sm')}>
+          {item.label}
+        </Link>
+      ))}
       <button
         type="button"
         className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-sm px-2 text-sm text-muted hover:bg-wash hover:text-copy"
@@ -101,6 +109,11 @@ export function AppHeader({
           </span>
         }
         items={[
+          ...consoles.map((item) => ({
+            id: item.id,
+            label: item.label,
+            onSelect: () => navigate(item.to),
+          })),
           { id: 'settings', label: 'Settings', onSelect: () => navigate('/app/settings') },
           { id: 'billing', label: 'Billing', onSelect: () => navigate('/app/billing') },
           {
