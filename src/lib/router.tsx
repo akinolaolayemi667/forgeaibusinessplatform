@@ -36,6 +36,8 @@ import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 import { SuperAdminDashboardPage } from '@/pages/super-admin/SuperAdminDashboardPage'
+import { SuperAdminOrganizationPage } from '@/pages/super-admin/SuperAdminOrganizationPage'
+import { SuperAdminOrganizationsPage } from '@/pages/super-admin/SuperAdminOrganizationsPage'
 import { SuperAdminPlaceholderPage } from '@/pages/super-admin/SuperAdminPlaceholderPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { SignupPage } from '@/pages/auth/SignupPage'
@@ -90,7 +92,8 @@ export const router = createBrowserRouter([
             element: <SuperAdminShell />,
             children: [
               { index: true, element: <SuperAdminDashboardPage />, handle: { title: 'Platform control' } },
-              { path: 'organizations', element: <SuperAdminPlaceholderPage title="ORGANIZATIONS" phase="COMING IN SUPER-2" />, handle: { title: 'Organizations' } },
+              { path: 'organizations', element: <SuperAdminOrganizationsPage />, handle: { title: 'Organizations' } },
+              { path: 'organizations/:organizationId', element: <SuperAdminOrganizationPage />, handle: { title: 'Organization' } },
               { path: 'users', element: <SuperAdminPlaceholderPage title="USERS" phase="COMING IN SUPER-2" />, handle: { title: 'Platform users' } },
               { path: 'admins', element: <SuperAdminPlaceholderPage title="ADMINS" phase="COMING IN SUPER-2" />, handle: { title: 'Platform admins' } },
               { path: 'analytics', element: <SuperAdminPlaceholderPage title="ANALYTICS" phase="COMING IN A LATER SUPER PHASE" />, handle: { title: 'Platform analytics' } },
